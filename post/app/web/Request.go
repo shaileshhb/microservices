@@ -2,28 +2,25 @@ package web
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 
-	"github.com/shaileshhb/microservices/post/errors"
+	"github.com/gofiber/fiber/v2"
+	"github.com/shaileshhb/microservices/post/app/errors"
 )
 
 // UnmarshalJSON parses data from request and return otherwise error return.
-func UnmarshalJSON(request *http.Request, out interface{}) error {
-	if request.Body == nil {
-		return errors.NewHTTPError(errors.ErrorCodeEmptyRequestBody, http.StatusBadRequest)
-	}
+func UnmarshalJSON(c *fiber.Ctx, out interface{}) error {
+	body := c.Body()
 
-	body, err := ioutil.ReadAll(request.Body)
-	if err != nil {
-		return errors.NewHTTPError(errors.ErrorCodeReadWriteFailure, http.StatusBadRequest)
+	if body == nil {
+		return errors.NewHTTPError(errors.ErrorCodeEmptyRequestBody, http.StatusBadRequest)
 	}
 
 	if len(body) == 0 {
 		return errors.NewHTTPError(errors.ErrorCodeEmptyRequestBody, http.StatusBadRequest)
 	}
 
-	err = json.Unmarshal(body, out)
+	err := json.Unmarshal(body, out)
 	if err != nil {
 		return errors.NewHTTPError(errors.ErrorCodeInvalidJSON, http.StatusBadRequest)
 	}

@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: db
+    restart: always
+    ports:
+      - 3307:3306
