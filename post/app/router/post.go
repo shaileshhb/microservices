@@ -10,9 +10,9 @@ func helloWorld(c *fiber.Ctx) error {
 }
 
 func SetupRoutes(app *fiber.App) {
-	app.Post("/api/v1/post", post.AddPosts)
-	app.Put("/api/v1/post/:postID", post.UpdatePost)
-	app.Delete("/api/v1/post/:postID", post.DeletedPost)
-	app.Get("/api/v1/post", post.GetPosts)
-	app.Get("/api/v1/post/:postID", post.GetPost)
+	app.Post("/api/v1/posts", post.AddPosts)
+	app.Put("/api/v1/posts/:postID", post.UpdatePost)
+	app.Delete("/api/v1/posts/:postID", post.DeletedPost)
+	app.Get("/api/v1/posts", post.GetPosts)
+	app.Get("/api/v1/posts/:postID", post.GetPost)
 }
