@@ -32,7 +32,7 @@ func initDatabase() (*gorm.DB, error) {
 	}
 
 	fmt.Println("successfully connected to database")
-	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&entity.Comment{})
+	db.Debug().AutoMigrate(&entity.Comment{})
 
 	return db, nil
 }

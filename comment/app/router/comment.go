@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/satori/uuid"
 	"github.com/shaileshhb/microservices/comment/app/comment"
 	"github.com/shaileshhb/microservices/comment/app/entity"
 	"github.com/shaileshhb/microservices/comment/app/web"
@@ -24,9 +25,12 @@ func NewCommentController(service *comment.CommentService) *CommentController {
 func (controller *CommentController) RegisterRoutes(r *gin.Engine) {
 
 	r.POST("/:postID/comments", controller.AddComment)
+	r.PUT("/:postID/comments/:commentID", controller.UpdateComment)
+	r.PUT("/comments/:commentID", controller.UpdateComment)
 	r.GET("/comments", controller.GetComments)
 }
 
+// AddComment will add new comment for specified post.
 func (controller *CommentController) AddComment(c *gin.Context) {
 	fmt.Println(" ===================== Add Comment ===================== ")
 
@@ -34,17 +38,78 @@ func (controller *CommentController) AddComment(c *gin.Context) {
 
 	err := web.UnmarshalJSON(c, &comment)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	comment.PostID, err = uuid.FromString(c.Param("postID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	err = controller.service.AddComment(&comment)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, comment)
+	c.JSON(http.StatusAccepted, nil)
+}
+
+// UpdateComment will update specified comment for specified post.
+func (controller *CommentController) UpdateComment(c *gin.Context) {
+	fmt.Println(" ===================== Update Comment ===================== ")
+
+	var comment entity.Comment
+
+	err := web.UnmarshalJSON(c, &comment)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	comment.PostID, err = uuid.FromString(c.Param("postID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	comment.ID, err = uuid.FromString(c.Param("commentID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = controller.service.UpdateComment(&comment)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusAccepted, nil)
+}
+
+// DeleteComment will delete specified comment.
+func (controller *CommentController) DeleteComment(c *gin.Context) {
+	fmt.Println(" ===================== Delete Comment ===================== ")
+
+	var comment entity.Comment
+	var err error
+
+	comment.ID, err = uuid.FromString(c.Param("commentID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = controller.service.DeleteComment(&comment)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusAccepted, nil)
 }
 
 // GetComments will get all comments.
@@ -55,7 +120,7 @@ func (controller *CommentController) GetComments(c *gin.Context) {
 
 	err := controller.service.GetComments(&comments)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 

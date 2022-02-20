@@ -9,8 +9,8 @@ import (
 
 type Base struct {
 	ID        uuid.UUID  `json:"id" gorm:"type:varchar(36);primarykey"`
-	CreatedAt time.Time  `json:"-" gorm:"type:datetime;DEFAULT"`
-	UpdatedAt time.Time  `json:"-" gorm:"type:datetime;DEFAULT"`
+	CreatedAt time.Time  `json:"-" gorm:"type:datetime"`
+	UpdatedAt time.Time  `json:"-" gorm:"type:datetime"`
 	DeletedAt *time.Time `json:"deletedAt" sql:"index"`
 }
 

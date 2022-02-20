@@ -52,14 +52,15 @@ func (service *CommentService) UpdateComment(comment *entity.Comment) error {
 	var tempComment entity.Comment
 	tempComment.ID = comment.ID
 
-	err = service.db.Debug().First(&tempComment).Error
+	err = service.db.Debug().Where("`id` = ?", comment.ID).First(&tempComment).Error
 	if err != nil {
 		return err
 	}
 
 	comment.CreatedAt = tempComment.CreatedAt
 
-	err = service.db.Debug().Model(&entity.Comment{}).Save(comment).Error
+	err = service.db.Debug().Model(&entity.Comment{}).
+		Where("`id` = ?", comment.ID).Save(comment).Error
 	if err != nil {
 		return err
 	}

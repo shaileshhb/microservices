@@ -1,6 +1,8 @@
 package web
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -8,18 +10,18 @@ import (
 func UnmarshalJSON(c *gin.Context, out interface{}) error {
 	// var body interface{}
 
-	err := c.ShouldBindJSON(out)
+	err := c.BindJSON(out)
 	if err != nil {
 		return err
 	}
 
-	// fmt.Println(" ================ tst ->", out)
+	fmt.Println(" ================ tst ->", out)
 
-	// if body == nil {
+	// if out == nil {
 	// 	return err
 	// }
 
-	// if len(body) == 0 {
+	// if len(out) == 0 {
 	// 	return err
 	// }
 
