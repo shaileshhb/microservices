@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/shaileshhb/microservices/comment/app/comment"
 	"github.com/shaileshhb/microservices/comment/app/config"
@@ -47,8 +49,15 @@ func main() {
 	// defer db.Close()
 
 	r := gin.Default()
-	// r.Group("/api/v1").
-	// .BasePath()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodPost, http.MethodPut, http.MethodGet, http.MethodDelete, http.MethodOptions},
+		AllowHeaders: []string{"Content-Type"},
+		// ExposeHeaders:    []string{"*"},
+		// AllowCredentials: true,
+		// MaxAge:           12 * time.Hour,
+	}))
 
 	service := comment.NewCommentService(db)
 	controller := router.NewCommentController(service)

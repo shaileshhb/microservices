@@ -33,26 +33,16 @@ function CreatePost() {
         <div className="row">
           <div className="col-sm-6 form-group">
             <label>{titleLabel}:</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Post-1"
-              value={postTitle}
-              onChange={(e) => updatePostTitle(e.target.value)}
-            />
+            <input type="text" className="form-control" placeholder="Post-1" 
+             value={postTitle} onChange={(e) => updatePostTitle(e.target.value)}/>
           </div>
         </div>
         <br />
-        <button
-          type="submit"
-          className="btn btn-primary"
-          onClick={onSubmitClick}
-        >
+        <button type="submit" className="btn btn-primary" onClick={onSubmitClick}>
           Submit
         </button>
       </form>
       <br />
-      {postTitle}
     </div>
   );
 }

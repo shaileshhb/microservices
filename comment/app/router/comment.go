@@ -24,10 +24,11 @@ func NewCommentController(service *comment.CommentService) *CommentController {
 // RegisterRoutes will register route for comments.
 func (controller *CommentController) RegisterRoutes(r *gin.Engine) {
 
-	r.POST("/:postID/comments", controller.AddComment)
-	r.PUT("/:postID/comments/:commentID", controller.UpdateComment)
-	r.PUT("/comments/:commentID", controller.UpdateComment)
-	r.GET("/comments", controller.GetComments)
+	r.POST("api/v1/post/:postID/comments", controller.AddComment)
+	r.PUT("api/v1/post/:postID/comments/:commentID", controller.UpdateComment)
+	r.PUT("api/v1/post/comments/:commentID", controller.UpdateComment)
+	r.GET("api/v1/post/:postID/comments", controller.GetComments)
+	r.GET("api/v1/post/comments", controller.GetComments)
 }
 
 // AddComment will add new comment for specified post.
@@ -41,6 +42,7 @@ func (controller *CommentController) AddComment(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+	fmt.Println(" === comment ->", comment)
 
 	comment.PostID, err = uuid.FromString(c.Param("postID"))
 	if err != nil {
@@ -110,6 +112,27 @@ func (controller *CommentController) DeleteComment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusAccepted, nil)
+}
+
+// GetComments will get all comments.
+func (controller *CommentController) GetPostComments(c *gin.Context) {
+	fmt.Println(" ===================== Get Post Comments ===================== ")
+
+	var comments []entity.Comment
+
+	postID, err := uuid.FromString(c.Param("commentID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = controller.service.GetPostComments(&comments, postID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, comments)
 }
 
 // GetComments will get all comments.

@@ -1,39 +1,37 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import CreateComment from "./CreateComment";
 
 function DisplayPost() {
-
-  const [posts, updatePosts] = useState({})
+  const [posts, updatePosts] = useState({});
 
   const loadPosts = async () => {
-    const response = await axios.get("http://localhost:4001/api/v1/posts").
-      catch(err => console.error(err))
+    const response = await axios
+      .get("http://localhost:4001/api/v1/posts")
+      .catch((err) => console.error(err));
 
-      console.log(response);
-      updatePosts(response.data)
-  }
+    console.log(response);
+    updatePosts(response.data);
+  };
 
   useEffect(() => {
-    loadPosts()
-  }, []) // [] -> callback only once
+    loadPosts();
+  }, []); // [] -> callback only once
 
-  const cardOfPosts = Object.values(posts).map(p => {
+  const cardOfPosts = Object.values(posts).map((p) => {
     return (
-      <div className="card" key={p.id}>
-        <div className="card-body">
-          {p.title}
+      <div className="d-flex justify-content-between" key={p.id}>
+        <div className="card">
+          <div className="card-body">
+            <h3>{p.title}</h3>
+            <CreateComment postID={p.id}/>
+          </div>
         </div>
       </div>
-    )
-  })
+    );
+  });
 
-  return (
-    <div className="container">
-      {/* <div className="card"></div> */}
-      {cardOfPosts}
-    </div>
-  )
+  return <div className="container">{cardOfPosts}</div>;
 }
 
 export default DisplayPost;

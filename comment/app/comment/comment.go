@@ -103,6 +103,17 @@ func (service *CommentService) GetPostComment(comments *[]entity.Comment, postID
 }
 
 // GetComments will get all comments for specified comments.
+func (service *CommentService) GetPostComments(comments *[]entity.Comment, postID uuid.UUID) error {
+
+	err := service.db.Debug().Where("`post_id` = ?", postID).Find(comments).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetComments will get all comments for specified comments.
 func (service *CommentService) GetComments(comments *[]entity.Comment) error {
 
 	err := service.db.Debug().Find(comments).Error
