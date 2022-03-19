@@ -9,16 +9,22 @@ app.use(cors())
 
 
 app.post("/event-bus/events", (req, resp) => {
-  const event = resp.body // type, data
+  const event = resp.body // event will have type, data
 
+  // broadcasting event to every service
   // post service
-  axios.post("http://localhost:4001/event-bus/event/listeners", event)
+  axios.post("http://localhost:4001/api/v1/event-bus/events/listeners", event)
     .catch( err => console.error(err))
 
   // comment service
-  axios.post("http://localhost:4002/event-bus/event/listeners", event)
+  axios.post("http://localhost:4002/api/v1/event-bus/events/listeners", event)
     .catch( err => console.error(err))
   
-  
-  // axios.post("http://localhost:")
+  // query service
+  axios.post("http://localhost:4003/event-bus/events/listeners", event)
+    .catch( err => console.error(err))
+
+    resp.send({})
 })
+
+app.listen(4005, () => console.log("Event bus started :4005"))

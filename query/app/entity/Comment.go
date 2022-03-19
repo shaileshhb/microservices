@@ -1,14 +1,11 @@
 package entity
 
-import "github.com/satori/uuid"
+import (
+	"github.com/satori/uuid"
+)
 
 type Comment struct {
 	Base
 	PostID  uuid.UUID `json:"postID" gorm:"type:varchar(36)"`
 	Message string    `json:"message" gorm:"type:varchar(1000)" binding:"required,max=1000"`
-}
-
-type Event struct {
-	Type string  `json:"type"`
-	Data Comment `json:"data"`
 }

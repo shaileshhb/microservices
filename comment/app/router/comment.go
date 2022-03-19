@@ -1,6 +1,8 @@
 package router
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -24,15 +26,40 @@ func NewCommentController(service *comment.CommentService) *CommentController {
 // RegisterRoutes will register route for comments.
 func (controller *CommentController) RegisterRoutes(r *gin.Engine) {
 
-	r.POST("api/v1/post/:postID/comments", controller.AddComment)
-	r.PUT("api/v1/post/:postID/comments/:commentID", controller.UpdateComment)
-	r.PUT("api/v1/post/comments/:commentID", controller.UpdateComment)
-	r.GET("api/v1/post/:postID/comments", controller.GetComments)
-	r.GET("api/v1/post/comments", controller.GetComments)
+	// event-bus
+	r.POST("api/v1/event-bus/events/listeners", controller.eventBus)
+
+	r.POST("api/v1/post/:postID/comments", controller.addComment)
+	r.PUT("api/v1/post/:postID/comments/:commentID", controller.updateComment)
+	r.PUT("api/v1/post/comments/:commentID", controller.updateComment)
+	r.GET("api/v1/post/:postID/comments", controller.getPostComments)
+	r.GET("api/v1/post/comments", controller.getComments)
 }
 
-// AddComment will add new comment for specified post.
-func (controller *CommentController) AddComment(c *gin.Context) {
+// eventBus wil listen to event-bus
+func (controller *CommentController) eventBus(c *gin.Context) {
+	fmt.Println(" ===================== Event Bus called ===================== ")
+
+	var event entity.Event
+
+	err := web.UnmarshalJSON(c, &event)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	fmt.Println(" === event ->", event)
+
+	err = controller.service.EventBus(&event)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusAccepted, nil)
+}
+
+// addComment will add new comment for specified post.
+func (controller *CommentController) addComment(c *gin.Context) {
 	fmt.Println(" ===================== Add Comment ===================== ")
 
 	var comment entity.Comment
@@ -56,11 +83,32 @@ func (controller *CommentController) AddComment(c *gin.Context) {
 		return
 	}
 
+	// emit an event
+	event := entity.Event{
+		Type: "CommentCreated",
+		Data: comment,
+	}
+
+	body, err := json.Marshal(&event)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	req, err := http.NewRequest(http.MethodPost, "http://localhost:4005/event-bus/events",
+		bytes.NewBuffer(body))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	fmt.Println(" ================== req ->", req)
+
 	c.JSON(http.StatusAccepted, nil)
 }
 
-// UpdateComment will update specified comment for specified post.
-func (controller *CommentController) UpdateComment(c *gin.Context) {
+// updateComment will update specified comment for specified post.
+func (controller *CommentController) updateComment(c *gin.Context) {
 	fmt.Println(" ===================== Update Comment ===================== ")
 
 	var comment entity.Comment
@@ -115,12 +163,12 @@ func (controller *CommentController) DeleteComment(c *gin.Context) {
 }
 
 // GetComments will get all comments.
-func (controller *CommentController) GetPostComments(c *gin.Context) {
+func (controller *CommentController) getPostComments(c *gin.Context) {
 	fmt.Println(" ===================== Get Post Comments ===================== ")
 
 	var comments []entity.Comment
 
-	postID, err := uuid.FromString(c.Param("commentID"))
+	postID, err := uuid.FromString(c.Param("postID"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -135,8 +183,8 @@ func (controller *CommentController) GetPostComments(c *gin.Context) {
 	c.JSON(http.StatusOK, comments)
 }
 
-// GetComments will get all comments.
-func (controller *CommentController) GetComments(c *gin.Context) {
+// getComments will get all comments.
+func (controller *CommentController) getComments(c *gin.Context) {
 	fmt.Println(" ===================== Get Comments ===================== ")
 
 	var comments []entity.Comment

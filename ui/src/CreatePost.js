@@ -6,8 +6,11 @@ function CreatePost() {
   const [postTitle, updatePostTitle] = useState("");
 
   const onSubmitHandler = async (e) => {
-    console.log(" onSubmitHandler -> ", e);
     e.preventDefault();
+    if (postTitle === "" || postTitle === null) {
+      alert("Post title must be specified")
+      return;
+    }
     await axios
       .post("http://localhost:4001/api/v1/posts", {
         title: postTitle,
@@ -18,10 +21,10 @@ function CreatePost() {
   };
 
   const onSubmitClick = () => {
-    if (postTitle === "" || postTitle === null) {
-      // alert("Post title must be specified")
-      return;
-    }
+    // if (postTitle === "" || postTitle === null) {
+    //   alert("Post title must be specified")
+    //   return;
+    // }
     console.log("onSubmitClick -> ", postTitle);
     updatePostTitle("");
   };

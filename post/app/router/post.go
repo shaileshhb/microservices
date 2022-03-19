@@ -5,11 +5,14 @@ import (
 	"github.com/shaileshhb/microservices/post/app/post"
 )
 
-func helloWorld(c *fiber.Ctx) error {
-	return c.SendString("Hello world!!!") // => ✋ register
-}
+// func helloWorld(c *fiber.Ctx) error {
+// 	return c.SendString("Hello world!!!") // => ✋ register
+// }
 
 func SetupRoutes(app *fiber.App) {
+	// event bus handler
+	app.Post("/api/v1/event-bus/events/listeners", post.EventBus)
+
 	app.Post("/api/v1/posts", post.AddPosts)
 	app.Put("/api/v1/posts/:postID", post.UpdatePost)
 	app.Delete("/api/v1/posts/:postID", post.DeletedPost)

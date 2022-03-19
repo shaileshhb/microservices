@@ -1,7 +1,10 @@
 package post
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,14 +16,19 @@ import (
 
 type Base struct {
 	ID        uuid.UUID  `json:"id" gorm:"type:varchar(36);primarykey"`
-	CreatedAt time.Time  `json:"-" gorm:"type:datetime;DEFAULT"`
-	UpdatedAt time.Time  `json:"-" gorm:"type:datetime;DEFAULT"`
+	CreatedAt time.Time  `json:"-" gorm:"type:datetime"`
+	UpdatedAt time.Time  `json:"-" gorm:"type:datetime"`
 	DeletedAt *time.Time `json:"deletedAt" sql:"index"`
 }
 
 type Post struct {
 	Base
 	Title string `json:"title" gorm:"type:varchar(100)"`
+}
+
+type Event struct {
+	Type string `json:"type"`
+	Data Post   `json:"data"`
 }
 
 func (b *Base) BeforeCreate(tx *gorm.DB) (err error) {
@@ -69,9 +77,26 @@ func AddPosts(c *fiber.Ctx) error {
 
 	err = db.Debug().Create(&post).Error
 	if err != nil {
-		fmt.Println(" === err -> ", err)
 		return fiber.ErrBadRequest
 	}
+
+	event := Event{
+		Type: "PostCreated",
+		Data: post,
+	}
+
+	body, err := json.Marshal(&event)
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	req, err := http.NewRequest(http.MethodPost, "http://localhost:4005/event-bus/events",
+		bytes.NewBuffer(body))
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	fmt.Println(" ================== req ->", req)
 
 	return c.SendString("Book added")
 }
@@ -117,4 +142,19 @@ func DeletedPost(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 	return c.SendString("Book deleted")
+}
+
+func EventBus(c *fiber.Ctx) error {
+	fmt.Println(" ===================== EventBus called ===================== ")
+
+	var event Event
+	err := web.UnmarshalJSON(c, &event)
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	fmt.Println("received event ->", event)
+	// db := database.DBConn
+
+	return c.Send([]byte{})
 }

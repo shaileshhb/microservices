@@ -1,21 +1,22 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 
-function DisplayComment({postID}) {
-  const [comments, updateComments] = useState({});
+function DisplayComment({comments}) {
+  // const [comments, updateComments] = useState({});
 
-  const loadComments = async () => {
-    const response = await axios
-      .get(`http://localhost:4002/api/v1/post/${postID}/comments`)
-      .catch((err) => console.error(err));
+  // const loadComments = async () => {
+  //   const response = await axios
+  //     .get(`http://localhost:4002/api/v1/post/${postID}/comments`)
+  //     .catch((err) => console.error(err));
 
-    console.log(response);
-    updateComments(response.data);
-  };
+  //   console.log(response);
+  //   updateComments(response.data);
+  // };
 
-  useEffect(() => {
-    loadComments();
-  }, []); // [] -> callback only once
+  // useEffect(() => {
+  //   loadComments();
+  //   updateComments(comments)
+  // }, []); // [] -> callback only once
+
+  console.log(comments);
 
   const cardOfComments = Object.values(comments).map((c) => {
     return (

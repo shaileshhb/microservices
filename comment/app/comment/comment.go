@@ -16,6 +16,11 @@ func NewCommentService(db *gorm.DB) *CommentService {
 	}
 }
 
+// EventBus wil listen to event-bus
+func (service *CommentService) EventBus(comment *entity.Event) error {
+	return nil
+}
+
 // AddComment will add comment for specified post.
 func (service *CommentService) AddComment(comment *entity.Comment) error {
 

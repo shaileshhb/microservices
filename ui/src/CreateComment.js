@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import axios from "axios";
-import DisplayComment from './DisplayComment';
 
 function CreateComment({postID}) {
 
@@ -44,7 +43,6 @@ function CreateComment({postID}) {
       </form>
       <br />
       <br />
-      <DisplayComment/>
     </div>
   )
 }
