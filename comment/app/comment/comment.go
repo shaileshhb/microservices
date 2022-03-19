@@ -1,6 +1,8 @@
 package comment
 
 import (
+	"fmt"
+
 	"github.com/satori/uuid"
 	"github.com/shaileshhb/microservices/comment/app/entity"
 	"gorm.io/gorm"
@@ -24,6 +26,7 @@ func (service *CommentService) EventBus(comment *entity.Event) error {
 // AddComment will add comment for specified post.
 func (service *CommentService) AddComment(comment *entity.Comment) error {
 
+	fmt.Println(" ============ adding comment")
 	err := service.doesPostExist(comment.PostID)
 	if err != nil {
 		return err
@@ -57,12 +60,12 @@ func (service *CommentService) UpdateComment(comment *entity.Comment) error {
 	var tempComment entity.Comment
 	tempComment.ID = comment.ID
 
-	err = service.db.Debug().Where("`id` = ?", comment.ID).First(&tempComment).Error
-	if err != nil {
-		return err
-	}
+	// err = service.db.Debug().Where("`id` = ?", comment.ID).First(&tempComment).Error
+	// if err != nil {
+	// 	return err
+	// }
 
-	comment.CreatedAt = tempComment.CreatedAt
+	// comment.CreatedAt = tempComment.CreatedAt
 
 	err = service.db.Debug().Model(&entity.Comment{}).
 		Where("`id` = ?", comment.ID).Save(comment).Error

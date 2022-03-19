@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jinzhu/gorm"
@@ -15,10 +14,10 @@ import (
 )
 
 type Base struct {
-	ID        uuid.UUID  `json:"id" gorm:"type:varchar(36);primarykey"`
-	CreatedAt time.Time  `json:"-" gorm:"type:datetime"`
-	UpdatedAt time.Time  `json:"-" gorm:"type:datetime"`
-	DeletedAt *time.Time `json:"deletedAt" sql:"index"`
+	ID uuid.UUID `json:"id" gorm:"type:varchar(36);primarykey"`
+	// CreatedAt time.Time  `json:"-" gorm:"type:datetime"`
+	// UpdatedAt time.Time  `json:"-" gorm:"type:datetime"`
+	// DeletedAt *time.Time `json:"deletedAt" sql:"index"`
 }
 
 type Post struct {
@@ -98,6 +97,13 @@ func AddPosts(c *fiber.Ctx) error {
 
 	fmt.Println(" ================== req ->", req)
 
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+	defer resp.Body.Close()
+
 	return c.SendString("Book added")
 }
 
@@ -153,8 +159,7 @@ func EventBus(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	fmt.Println("received event ->", event)
-	// db := database.DBConn
+	fmt.Println(" === event received for post ->")
 
 	return c.Send([]byte{})
 }

@@ -8,8 +8,12 @@ app.use(bodyParser.json())
 app.use(cors())
 
 
+const events = [];
+
 app.post("/event-bus/events", (req, resp) => {
-  const event = resp.body // event will have type, data
+  const event = req.body // event will have type, data
+
+  events.push(event)
 
   // broadcasting event to every service
   // post service
@@ -25,6 +29,10 @@ app.post("/event-bus/events", (req, resp) => {
     .catch( err => console.error(err))
 
     resp.send({})
+})
+
+app.get("/event-bus/events", (req, resp) => {
+  resp.send(events)
 })
 
 app.listen(4005, () => console.log("Event bus started :4005"))

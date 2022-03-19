@@ -21,7 +21,7 @@ function DisplayComment({comments}) {
   const cardOfComments = Object.values(comments).map((c) => {
     return (
       <div className="d-flex justify-content-between" key={c.id}>
-        <div className="card">
+        <div className="card card-sm">
           <div className="card-body">
             <h3>{c.message}</h3>
           </div>

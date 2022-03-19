@@ -67,7 +67,7 @@ func main() {
 		fmt.Println(" ========= error occured ========= ", err.Error())
 		return
 	}
-	fmt.Println(" ===== Server started ===== ")
+	fmt.Println(" ======= Listening at :4003")
 }
 
 func routerRegister(db *gorm.DB, routes *mux.Router) {

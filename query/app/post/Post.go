@@ -19,7 +19,7 @@ func NewPostService(db *gorm.DB) *PostService {
 // GetPosts will get all posts.
 func (service *PostService) GetPosts(posts *[]entity.Post) error {
 
-	err := service.db.Debug().Where("posts.`deleted_at` IS NULL").Preload("Comments").Find(posts).Error
+	err := service.db.Debug().Preload("Comments").Find(posts).Error
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func (service *PostService) GetPosts(posts *[]entity.Post) error {
 // GetPost will get specified posts.
 func (service *PostService) GetPost(post *[]entity.Post, postID uuid.UUID) error {
 
-	err := service.db.Debug().Where("`id` = ? AND `deleted_at` IS NULL", postID).Preload("Comments").Find(post).Error
+	err := service.db.Debug().Where("`id` = ?", postID).Preload("Comments").Find(post).Error
 	if err != nil {
 		return err
 	}

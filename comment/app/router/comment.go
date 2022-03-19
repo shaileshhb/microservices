@@ -47,7 +47,7 @@ func (controller *CommentController) eventBus(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	fmt.Println(" === event ->", event)
+	fmt.Println(" === event received for comment ->")
 
 	err = controller.service.EventBus(&event)
 	if err != nil {
@@ -66,6 +66,7 @@ func (controller *CommentController) addComment(c *gin.Context) {
 
 	err := web.UnmarshalJSON(c, &comment)
 	if err != nil {
+		fmt.Println(" ========== err in unmarshal ->", err)
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -103,6 +104,13 @@ func (controller *CommentController) addComment(c *gin.Context) {
 	}
 
 	fmt.Println(" ================== req ->", req)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+	defer resp.Body.Close()
 
 	c.JSON(http.StatusAccepted, nil)
 }

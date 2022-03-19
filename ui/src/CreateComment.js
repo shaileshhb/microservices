@@ -11,7 +11,7 @@ function CreateComment({postID}) {
     console.log(" _postID -> ", postID);
     await axios
       .post(`http://localhost:4002/api/v1/post/${postID}/comments`, {
-        title: commentMessage,
+        message: commentMessage,
       })
       .catch((err) => console.error(err));
 
@@ -24,7 +24,7 @@ function CreateComment({postID}) {
       return;
     }
     console.log("onSubmitClick -> ", commentMessage);
-    updateCommentMessage("");
+    updateCommentMessage(commentMessage);
   };
 
 
