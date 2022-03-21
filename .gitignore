@@ -21,3 +21,5 @@ sketch
 *.mp4
 
 videos/
+.env
+*.env
